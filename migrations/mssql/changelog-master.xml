@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Include all changesets -->
+    <include file="changelogs/001-create-roles-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/002-create-permissions-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/003-create-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/004-create-user-roles-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/005-create-role-permissions-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/006-create-refresh-tokens-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/007-create-audit-logs-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/008-seed-default-data.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

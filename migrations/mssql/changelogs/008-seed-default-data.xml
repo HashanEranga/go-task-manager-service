@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="008-seed-default-roles" author="system">
+        <sql>SET IDENTITY_INSERT roles ON</sql>
+        <insert tableName="roles">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="ADMIN"/>
+            <column name="description" value="Administrator with full access"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="USER"/>
+            <column name="description" value="Regular user with standard access"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="GUEST"/>
+            <column name="description" value="Guest user with limited access"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="MODERATOR"/>
+            <column name="description" value="Moderator with elevated permissions"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <sql>SET IDENTITY_INSERT roles OFF</sql>
+    </changeSet>
+
+    <changeSet id="008-seed-default-permissions" author="system">
+        <!-- User Permissions -->
+        <insert tableName="permissions">
+            <column name="name" value="users.read"/>
+            <column name="resource" value="users"/>
+            <column name="action" value="read"/>
+            <column name="description" value="View user information"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="users.create"/>
+            <column name="resource" value="users"/>
+            <column name="action" value="create"/>
+            <column name="description" value="Create new users"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="users.update"/>
+            <column name="resource" value="users"/>
+            <column name="action" value="update"/>
+            <column name="description" value="Update user information"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="users.delete"/>
+            <column name="resource" value="users"/>
+            <column name="action" value="delete"/>
+            <column name="description" value="Delete users"/>
+        </insert>
+
+        <!-- Role Permissions -->
+        <insert tableName="permissions">
+            <column name="name" value="roles.read"/>
+            <column name="resource" value="roles"/>
+            <column name="action" value="read"/>
+            <column name="description" value="View roles"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="roles.create"/>
+            <column name="resource" value="roles"/>
+            <column name="action" value="create"/>
+            <column name="description" value="Create roles"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="roles.update"/>
+            <column name="resource" value="roles"/>
+            <column name="action" value="update"/>
+            <column name="description" value="Update roles"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="roles.delete"/>
+            <column name="resource" value="roles"/>
+            <column name="action" value="delete"/>
+            <column name="description" value="Delete roles"/>
+        </insert>
+
+        <!-- Audit Permissions -->
+        <insert tableName="permissions">
+            <column name="name" value="audit.read"/>
+            <column name="resource" value="audit"/>
+            <column name="action" value="read"/>
+            <column name="description" value="View audit logs"/>
+        </insert>
+
+        <!-- Settings Permissions -->
+        <insert tableName="permissions">
+            <column name="name" value="settings.manage"/>
+            <column name="resource" value="settings"/>
+            <column name="action" value="manage"/>
+            <column name="description" value="Manage system settings"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="008-assign-permissions-to-admin-role" author="system">
+        <!-- Admin gets all permissions -->
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="6"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="10"/>
+        </insert>
+
+        <!-- User role gets read permissions -->
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="3"/>
+        </insert>
+
+        <!-- Moderator gets user and role management -->
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_id" valueNumeric="5"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_id" valueNumeric="9"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="008-create-default-admin-user" author="system">
+        <!-- Default admin user: username=admin, password=Admin@123 (bcrypt hash) -->
+        <sql>SET IDENTITY_INSERT users ON</sql>
+        <insert tableName="users">
+            <column name="id" valueNumeric="1"/>
+            <column name="username" value="admin"/>
+            <column name="email" value="admin@example.com"/>
+            <column name="password_hash" value="$2a$10$qZ9.1YrJXRLRkO7N8i8tGuKTKUbDxvL5EoI7hF5N5xJ7qVfP0L5Ni"/>
+            <column name="first_name" value="System"/>
+            <column name="last_name" value="Administrator"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_email_verified" valueBoolean="true"/>
+            <column name="email_verified_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <sql>SET IDENTITY_INSERT users OFF</sql>
+
+        <!-- Assign admin role to admin user -->
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
