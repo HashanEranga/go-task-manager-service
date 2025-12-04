@@ -10,6 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/HashanEranga/go-task-manager-service/internal/repository"
+	"github.com/HashanEranga/go-task-manager-service/internal/services"
+	"github.com/HashanEranga/go-task-manager-service/pkg/jwt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -17,6 +20,7 @@ import (
 	"github.com/HashanEranga/go-task-manager-service/internal/config"
 	"github.com/HashanEranga/go-task-manager-service/internal/database"
 	"github.com/HashanEranga/go-task-manager-service/internal/handlers"
+	appmiddleware "github.com/HashanEranga/go-task-manager-service/internal/middleware"
 	"github.com/HashanEranga/go-task-manager-service/pkg/logger"
 )
 
@@ -30,7 +34,7 @@ func main() {
 	logger.Init(cfg.App.LogLevel)
 	logger.Info("Starting TaskFlow server...")
 
-	db, err := database.NewDatabase(cfg)
+	db, err := database.NewGormDatabase(cfg)
 	if err != nil {
 		logger.Error("Failed to create database", err)
 		os.Exit(1)
@@ -48,6 +52,25 @@ func main() {
 	}(db)
 
 	logger.Info(fmt.Sprintf("Connected to %s database successfully", db.GetDriverName()))
+
+	gormDB := db.GetGormDB()
+	tokenManager := jwt.NewTokenManager(
+		cfg.JWT.Secret,
+		cfg.JWT.Expiry,
+		cfg.JWT.RefreshExpiry,
+	)
+
+	userRepo := repository.NewUserRepository(gormDB)
+	authRepo := repository.NewAuthRepository(gormDB)
+	roleRepo := repository.NewRoleRepository(gormDB)
+	auditRepo := repository.NewAuditRepository(gormDB)
+
+	authService := services.NewAuthService(userRepo, authRepo, roleRepo, auditRepo, tokenManager)
+	services.NewUserService(userRepo, roleRepo)
+
+	authHandler := handlers.NewAuthHandler(authService)
+
+	authMiddleware := appmiddleware.NewAuthMiddleware(tokenManager)
 
 	r := chi.NewRouter()
 
@@ -73,7 +96,19 @@ func main() {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("TaskFlow API v1.0"))
+			w.Write([]byte("TaskFlow API v1.0 with GORM"))
+		})
+
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/register", authHandler.Register)
+			r.Post("/login", authHandler.Login)
+			r.Post("/refresh", authHandler.RefreshToken)
+
+			r.Group(func(r chi.Router) {
+				r.Use(authMiddleware.Authenticate)
+				r.Get("/me", authHandler.Me)
+				r.Post("/logout", authHandler.Logout)
+			})
 		})
 	})
 

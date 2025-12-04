@@ -1,0 +1,7 @@
+### GET endpoint for health
+GET http://localhost:8080/health
+###
+
+### GET endpoint for health/db
+GET http://localhost:8080/health/db
+###

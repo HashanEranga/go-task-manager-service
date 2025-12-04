@@ -1,0 +1,36 @@
+### Register User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "Hashan",
+  "email": "hashan@example.com",
+  "password": "Hashan@123456",
+  "first_name": "hashan",
+  "last_name": "eranga"
+}
+
+### Login User
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "gormuser",
+  "password": "Gorm@123456"
+}
+
+### Get Current User (requires authentication)
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6Ikhhc2hhbiIsImVtYWlsIjoiaGFzaGFuQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJwZXJtaXNzaW9ucyI6WyJ1c2Vycy5yZWFkIiwidXNlcnMudXBkYXRlIl0sInN1YiI6Ikhhc2hhbiIsImV4cCI6MTc2NDg1MzcyMywibmJmIjoxNzY0ODUyODIzLCJpYXQiOjE3NjQ4NTI4MjN9.iXhHaFcTwuiVkSn7T9gejAFFlWlp_0p73XKPfP5M5CQ
+
+### Refresh Token
+POST http://localhost:8080/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJIYXNoYW4iLCJleHAiOjE3NjU0NTc2MjMsIm5iZiI6MTc2NDg1MjgyMywiaWF0IjoxNzY0ODUyODIzfQ.mAXqcLBpHkcf8hSmSduMFV09RX9TxK90pNHVLr50twg"
+}
+
+### Logout (requires authentication)
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6Ikhhc2hhbiIsImVtYWlsIjoiaGFzaGFuQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJwZXJtaXNzaW9ucyI6WyJ1c2Vycy5yZWFkIiwidXNlcnMudXBkYXRlIl0sInN1YiI6Ikhhc2hhbiIsImV4cCI6MTc2NDg1MzcyMywibmJmIjoxNzY0ODUyODIzLCJpYXQiOjE3NjQ4NTI4MjN9.iXhHaFcTwuiVkSn7T9gejAFFlWlp_0p73XKPfP5M5CQ

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/HashanEranga/go-task-manager-service/internal/config"
-	_ "github.com/denisenkom/go-mssqldb"
 )
 
 type MSSQLDB struct {

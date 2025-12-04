@@ -2,9 +2,9 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/HashanEranga/go-task-manager-service/internal/config"
+	"gorm.io/gorm"
 )
 
 type Database interface {
@@ -13,15 +13,9 @@ type Database interface {
 	GetDB() *sql.DB
 	Ping() error
 	GetDriverName() string
+	GetGormDB() *gorm.DB
 }
 
 func NewDatabase(cfg *config.Config) (Database, error) {
-	switch cfg.GetDatabaseDriver() {
-	case "mssql":
-		return NewMSSQLDB(cfg), nil
-	case "postgres":
-		return NewPostgresDB(cfg), nil
-	default:
-		return nil, fmt.Errorf("Unsupported database driver: %s", cfg.GetDatabaseDriver())
-	}
+	return NewGormDatabase(cfg)
 }
