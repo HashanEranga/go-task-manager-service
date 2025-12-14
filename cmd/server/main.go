@@ -66,9 +66,10 @@ func main() {
 	auditRepo := repository.NewAuditRepository(gormDB)
 
 	authService := services.NewAuthService(userRepo, authRepo, roleRepo, auditRepo, tokenManager)
-	services.NewUserService(userRepo, roleRepo)
+	userService := services.NewUserService(userRepo, roleRepo)
 
 	authHandler := handlers.NewAuthHandler(authService)
+	userHandler := handlers.NewUserHandler(userService)
 
 	authMiddleware := appmiddleware.NewAuthMiddleware(tokenManager)
 
@@ -109,6 +110,27 @@ func main() {
 				r.Get("/me", authHandler.Me)
 				r.Post("/logout", authHandler.Logout)
 			})
+		})
+
+		// User Management Routes (Admin only)
+		r.Route("/users", func(r chi.Router) {
+			// All user management requires authentication AND users.manage permission
+			r.Use(authMiddleware.Authenticate)
+			r.Use(authMiddleware.RequirePermission("users.manage"))
+
+			r.Get("/", userHandler.ListUsers)
+			r.Get("/{id}", userHandler.GetUser)
+			r.Post("/", userHandler.CreateUser)
+			r.Put("/{id}", userHandler.UpdateUser)
+			r.Delete("/{id}", userHandler.DeleteUser)
+
+			// User status management
+			r.Patch("/{id}/activate", userHandler.ActivateUser)
+			r.Patch("/{id}/deactivate", userHandler.DeactivateUser)
+
+			// Role management
+			r.Post("/{id}/roles", userHandler.AssignRole)
+			r.Delete("/{id}/roles/{roleId}", userHandler.RevokeRole)
 		})
 	})
 

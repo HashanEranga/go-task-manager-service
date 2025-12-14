@@ -48,3 +48,31 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+// RequirePermission checks if user has specific permission
+func (m *AuthMiddleware) RequirePermission(requiredPermission string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			permissions, ok := r.Context().Value("permissions").([]string)
+			if !ok {
+				response.Error(w, http.StatusForbidden, "Insufficient permissions")
+				return
+			}
+
+			hasPermission := false
+			for _, perm := range permissions {
+				if perm == requiredPermission {
+					hasPermission = true
+					break
+				}
+			}
+
+			if !hasPermission {
+				response.Error(w, http.StatusForbidden, "Insufficient permissions")
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}

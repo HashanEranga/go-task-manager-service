@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"errors"
+
+	"github.com/HashanEranga/go-task-manager-service/internal/models"
 	"gorm.io/gorm"
 )
 
@@ -50,4 +53,17 @@ func (r *RoleRepository) HasPermission(userID int64, permissionName string) (boo
 		Count(&count).Error
 
 	return count > 0, err
+}
+
+// FindByID finds a role by ID
+func (r *RoleRepository) FindByID(id int64) (*models.Role, error) {
+	var role models.Role
+	result := r.db.First(&role, id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("role not found")
+		}
+		return nil, result.Error
+	}
+	return &role, nil
 }

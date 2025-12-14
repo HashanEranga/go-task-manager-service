@@ -14,5 +14,6 @@
     <include file="changelogs/006-create-refresh-tokens-table.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/007-create-audit-logs-table.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/008-seed-default-data.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/009-add-users-manage-permission.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

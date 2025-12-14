@@ -107,3 +107,87 @@ func (r *UserRepository) AssignRole(userID, roleID int64, assignedBy *int64) err
 	}
 	return r.db.Create(&userRole).Error
 }
+
+// ListUsers retrieves paginated list of users with filtering
+func (r *UserRepository) ListUsers(offset, limit int, filters map[string]interface{}) ([]models.User, int64, error) {
+	var users []models.User
+	var total int64
+
+	query := r.db.Model(&models.User{})
+
+	// Apply filters
+	if username, ok := filters["username"]; ok && username != "" {
+		query = query.Where("username ILIKE ?", "%"+username.(string)+"%")
+	}
+	if email, ok := filters["email"]; ok && email != "" {
+		query = query.Where("email ILIKE ?", "%"+email.(string)+"%")
+	}
+	if isActive, ok := filters["is_active"]; ok {
+		query = query.Where("is_active = ?", isActive)
+	}
+
+	// Get total count
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results with roles
+	err := query.
+		Preload("Roles").
+		Offset(offset).
+		Limit(limit).
+		Order("created_at DESC").
+		Find(&users).Error
+
+	return users, total, err
+}
+
+// Update updates user information
+func (r *UserRepository) Update(user *models.User) error {
+	result := r.db.Save(user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return ErrUserNotFound
+		}
+		return result.Error
+	}
+	return nil
+}
+
+// UpdateFields updates specific user fields
+func (r *UserRepository) UpdateFields(userID int64, updates map[string]interface{}) error {
+	result := r.db.Model(&models.User{}).Where("id = ?", userID).Updates(updates)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return ErrUserNotFound
+	}
+	return nil
+}
+
+// Delete performs soft delete (deactivate) on user
+func (r *UserRepository) Delete(userID int64) error {
+	// In this implementation, "delete" means deactivating the account
+	return r.UpdateFields(userID, map[string]interface{}{
+		"is_active": false,
+	})
+}
+
+// RemoveRole removes a role from user
+func (r *UserRepository) RemoveRole(userID, roleID int64) error {
+	return r.db.Exec("DELETE FROM user_roles WHERE user_id = ? AND role_id = ?", userID, roleID).Error
+}
+
+// GetUserRoles retrieves all roles for a user
+func (r *UserRepository) GetUserRoles(userID int64) ([]models.Role, error) {
+	var user models.User
+	err := r.db.Preload("Roles").First(&user, userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user.Roles, nil
+}
