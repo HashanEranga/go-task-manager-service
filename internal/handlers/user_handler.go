@@ -22,7 +22,22 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 	}
 }
 
-// ListUsers handles GET /api/users
+// ListUsers godoc
+// @Summary List all users
+// @Description Get paginated list of users with optional filters
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Page size" default(20)
+// @Param username query string false "Filter by username"
+// @Param email query string false "Filter by email"
+// @Param is_active query boolean false "Filter by active status"
+// @Success 200 {object} models.ListUsersResponse
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users [get]
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	// Parse query parameters
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
@@ -97,7 +112,19 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, resp)
 }
 
-// GetUser handles GET /api/users/:id
+// GetUser godoc
+// @Summary Get user by ID
+// @Description Get detailed user information by ID
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Success 200 {object} models.UserResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /users/{id} [get]
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -114,7 +141,19 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, userResp)
 }
 
-// CreateUser handles POST /api/users
+// CreateUser godoc
+// @Summary Create new user
+// @Description Create a new user account (admin only)
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body models.CreateUserRequest true "Create user request"
+// @Success 201 {object} models.User
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Router /users [post]
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -132,7 +171,20 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, user)
 }
 
-// UpdateUser handles PUT /api/users/:id
+// UpdateUser godoc
+// @Summary Update user
+// @Description Update user information
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Param request body models.UpdateUserRequest true "Update user request"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Router /users/{id} [put]
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -156,7 +208,19 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, user)
 }
 
-// DeleteUser handles DELETE /api/users/:id
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Soft delete user (deactivate account)
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id} [delete]
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -175,7 +239,19 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ActivateUser handles PATCH /api/users/:id/activate
+// ActivateUser godoc
+// @Summary Activate user
+// @Description Activate a deactivated user account
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id}/activate [patch]
 func (h *UserHandler) ActivateUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -194,7 +270,19 @@ func (h *UserHandler) ActivateUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DeactivateUser handles PATCH /api/users/:id/deactivate
+// DeactivateUser godoc
+// @Summary Deactivate user
+// @Description Deactivate a user account
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id}/deactivate [patch]
 func (h *UserHandler) DeactivateUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -213,7 +301,20 @@ func (h *UserHandler) DeactivateUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// AssignRole handles POST /api/users/:id/roles
+// AssignRole godoc
+// @Summary Assign role to user
+// @Description Assign a role to a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Param request body models.AssignRoleRequest true "Assign role request"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Router /users/{id}/roles [post]
 func (h *UserHandler) AssignRole(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -241,7 +342,20 @@ func (h *UserHandler) AssignRole(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// RevokeRole handles DELETE /api/users/:id/roles/:roleId
+// RevokeRole godoc
+// @Summary Revoke role from user
+// @Description Remove a role from a user
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "User ID"
+// @Param roleId path int true "Role ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id}/roles/{roleId} [delete]
 func (h *UserHandler) RevokeRole(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

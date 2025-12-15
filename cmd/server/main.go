@@ -16,13 +16,35 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/HashanEranga/go-task-manager-service/internal/config"
 	"github.com/HashanEranga/go-task-manager-service/internal/database"
 	"github.com/HashanEranga/go-task-manager-service/internal/handlers"
 	appmiddleware "github.com/HashanEranga/go-task-manager-service/internal/middleware"
 	"github.com/HashanEranga/go-task-manager-service/pkg/logger"
+
+	_ "github.com/HashanEranga/go-task-manager-service/docs"
 )
+
+// @title TaskFlow API
+// @version 1.0
+// @description Task management system with JWT authentication and RBAC authorization
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@taskflow.com
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /api
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
 	cfg, err := config.Load()
@@ -94,6 +116,9 @@ func main() {
 
 	r.Get("/health", healthHandler.Health)
 	r.Get("/health/db", healthHandler.HealthDB)
+
+	// Swagger UI
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
